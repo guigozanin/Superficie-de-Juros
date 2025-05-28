@@ -10,3 +10,9 @@ python-bcb
 pandas-datareader
 python-dateutil
 matplotlib
+pandas
+yfinance
+requests
+pyarrow  # Para suporte a arquivos parquet
+plotly    # Para gráficos interativos
+markdown
