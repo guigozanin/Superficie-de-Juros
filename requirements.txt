@@ -9,3 +9,4 @@ bizdays
 python-bcb
 pandas-datareader
 python-dateutil
+matplotlib
