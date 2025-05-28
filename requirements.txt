@@ -6,6 +6,6 @@ scipy
 requests
 lxml
 bizdays
-bcb
+python-bcb
 pandas-datareader
 python-dateutil
