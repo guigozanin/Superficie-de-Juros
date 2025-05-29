@@ -60,34 +60,113 @@ def get_responsive_height(tipo="normal"):
 st.set_page_config(
     page_title="Superfície de Juros Brasil x EUA",
     page_icon="📈",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        "Get Help": None,
+        "Report a bug": None,
+        "About": "Aplicativo de visualização de curvas de juros Brasil x EUA"
+    }
 )
+# Nota: O tema escuro é forçado via CSS customizado abaixo, pois o parâmetro 'theme' não é suportado
+# em algumas versões do Streamlit
 
 # CSS customizado para tema dark e navegação avançada
 st.markdown("""
 <style>
     @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
     
-    .main {
-        background-color: #0e1117;
+    /* Reset e aplicação universal do modo escuro */
+    html, body, [class*="css"] {
+        background-color: #0e1117 !important;
+        color: #f0f2f6 !important;
+    }
+    
+    /* Elementos principais da interface */
+    .main, .stApp, .css-1d391kg, .block-container {
+        background-color: #0e1117 !important;
         font-family: "Inter", sans-serif;
     }
+    
+    /* Sidebar e componentes */
+    .sidebar .sidebar-content, [data-testid="stSidebar"] {
+        background-color: #1a1c24 !important;
+        border-right: 1px solid #2d323b !important;
+    }
+    
+    /* Inputs, botões e selects */
+    .stTextInput input, .stNumberInput input, .stDateInput input, 
+    .stSelectbox > div, .stMultiSelect > div {
+        background-color: #262730 !important;
+        color: #f0f2f6 !important;
+        border-color: #4a4f60 !important;
+    }
+    
+    /* Controles específicos */
+    .stDateInput > div[data-baseweb="input"] {
+        background-color: #262730 !important;
+    }
+    
+    .stDateInput > div[data-baseweb="input"] > div {
+        background-color: #262730 !important;
+        color: #f0f2f6 !important;
+    }
+    
+    .stSlider [data-baseweb="slider"] {
+        background-color: #3a3f4a !important;
+    }
+    
+    .stSlider [data-baseweb="thumb"] {
+        background-color: #4a90e2 !important;
+    }
+    
+    /* Botões */
+    button, .stButton button, div[data-testid="stButton"] button {
+        background-color: #262730 !important;
+        color: #f0f2f6 !important;
+        border-color: #4a4f60 !important;
+    }
+    
+    /* Botões de download */
+    .stDownloadButton button {
+        background-color: #1e3a8a !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
+        transition: background-color 0.3s !important;
+    }
+    
+    .stDownloadButton button:hover {
+        background-color: #2563eb !important;
+    }
+    
+    /* Painéis e cartões */
     .stTabs [data-baseweb="tab-list"] {
         justify-content: center;
+        background-color: #1a1c24 !important;
+        border-radius: 8px;
     }
+    
     .stTabs [data-baseweb="tab"] {
         font-size: 1.1rem;
         font-weight: 600;
-        color: #fafafa;
+        color: #fafafa !important;
     }
+    
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #3a55c5 !important;
+    }
+    
+    /* Cards e headers */
     .metric-card {
-        background-color: #262730;
+        background-color: #262730 !important;
         padding: 1rem;
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         margin: 0.5rem 0;
         color: #fafafa;
     }
+    
     .country-header {
         background: linear-gradient(90deg, #1f77b4, #ff7f0e);
         color: white;
@@ -95,6 +174,118 @@ st.markdown("""
         border-radius: 10px;
         text-align: center;
         margin: 1rem 0;
+    }
+    
+    /* Chart title e elementos personalizados */
+    .chart-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #f0f2f6 !important;
+        text-align: center;
+        margin: 1rem 0;
+        padding: 0.5rem;
+        background-color: #1a1c24;
+        border-radius: 8px;
+    }
+    
+    /* Data frames e tabelas */
+    .dataframe, .css-1b0udgb, .stDataFrame {
+        background-color: #262730 !important;
+        color: #f0f2f6 !important;
+    }
+    
+    .dataframe th {
+        background-color: #3a3f4a !important;
+        color: white !important;
+    }
+    
+    .dataframe td {
+        background-color: #262730 !important;
+        color: #f0f2f6 !important;
+    }
+    
+    /* Texto e cabeçalhos */
+    h1, h2, h3, h4, h5, h6, p, span {
+        color: #f0f2f6 !important;
+    }
+    
+    /* Plotly hover e tooltips */
+    .plotly .modebar, .js-plotly-plot .plotly .modebar {
+        background-color: rgba(26, 28, 36, 0.9) !important;
+        color: #f0f2f6 !important;
+    }
+    
+    .plotly .modebar-btn path {
+        fill: #f0f2f6 !important;
+    }
+    
+    /* Calendários e seletores de data */
+    div[data-baseweb="calendar"] {
+        background-color: #262730 !important;
+        border-color: #4a4f60 !important;
+    }
+    
+    div[data-baseweb="calendar"] button {
+        color: #f0f2f6 !important;
+    }
+    
+    div[data-baseweb="calendar"] button:hover {
+        background-color: #3a3f4a !important;
+    }
+    
+    div[data-baseweb="calendar"] button[aria-selected="true"] {
+        background-color: #4a90e2 !important;
+        color: white !important;
+    }
+    
+    /* Mensagens e alertas */
+    div[data-testid="stAlert"] {
+        background-color: #262730 !important;
+        color: #f0f2f6 !important;
+        border-color: #4a4f60 !important;
+        border-width: 1px !important;
+        border-radius: 8px !important;
+        padding: 0.75rem 1rem !important;
+    }
+    
+    /* Erro */
+    div[data-baseweb="notification"] {
+        background-color: #262730 !important;
+        border-color: #dc2626 !important;
+    }
+    
+    /* Warnings */
+    div[data-testid="stAlert"][kind="warning"] {
+        border-color: #f59e0b !important;
+    }
+    
+    /* Success */
+    div[data-testid="stAlert"][kind="success"] {
+        border-color: #10b981 !important;
+    }
+    
+    /* Info */
+    div[data-testid="stAlert"][kind="info"] {
+        border-color: #3b82f6 !important;
+    }
+    
+    /* Scrollbars personalizadas */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #1a1c24;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #4a4f60;
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #5a6072;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -179,29 +370,42 @@ def plot_superficie_3d(df, titulo, pais):
             xaxis=dict(
                 title="Maturidade",
                 showgrid=True,
-                gridcolor="lightblue"
+                gridcolor="#2d3035",
+                backgroundcolor="#0e1117",
+                gridwidth=1,
+                linecolor="#4a4f60"
             ),
             yaxis=dict(
                 title="Data",
                 showgrid=True,
-                gridcolor="lightblue"
+                gridcolor="#2d3035",
+                backgroundcolor="#0e1117",
+                gridwidth=1,
+                linecolor="#4a4f60"
             ),
             zaxis=dict(
                 title="Taxa (%)",
                 showgrid=True,
-                gridcolor="lightblue"
+                gridcolor="#2d3035",
+                backgroundcolor="#0e1117",
+                gridwidth=1,
+                linecolor="#4a4f60"
             ),
             aspectratio=dict(x=1, y=2, z=0.7),
             camera=dict(
                 eye=dict(x=1.5, y=1.5, z=1.2)
-            )
+            ),
+            bgcolor="#0e1117"
         ),
         height=get_responsive_height("superficie"),
         margin=dict(l=0, r=0, b=0, t=50),
-        font=dict(size=12),
+        font=dict(
+            size=12,
+            color="#f0f2f6"
+        ),
         template="plotly_dark",
-        plot_bgcolor="rgba(0,0,0,0)",
-        paper_bgcolor="rgba(0,0,0,0)"
+        plot_bgcolor="#0e1117",
+        paper_bgcolor="#0e1117"
     )
     
     return fig
@@ -299,22 +503,34 @@ def plot_curva_di1_plotly(di1_curve, refdate_one, refdate_two):
                 yanchor="top",
                 y=0.98,
                 xanchor="center",
-                x=0.5
+                x=0.5,
+                font=dict(color="#f0f2f6")
             ),
             height=get_responsive_height("normal"),
             template="plotly_dark",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="#0e1117",
+            paper_bgcolor="#0e1117",
             # Configuração explícita dos eixos
             xaxis=dict(
                 title="Maturidade",
-                tickformat="%Y-%m",
-                dtick="M6",  # Tick a cada 6 meses
-                tickangle=45  # Rotaciona labels 45 graus
+                tickformat="%Y",  # Formato de ano
+                dtick="M24",  # Tick a cada 24 meses (2 anos)
+                tickangle=45,  # Rotaciona labels 45 graus
+                gridcolor="#2d3035",
+                zerolinecolor="#4a4f60",
+                color="#f0f2f6"
             ),
             yaxis=dict(
                 title="Taxa de Juros (%)",
-                tickformat=".1%"
+                tickformat=".1%",
+                gridcolor="#2d3035",
+                zerolinecolor="#4a4f60",
+                color="#f0f2f6"
+            ),
+            font=dict(
+                family="Inter, sans-serif",
+                size=12,
+                color="#f0f2f6"
             )
         )
         
@@ -398,20 +614,32 @@ def plot_curva_eua_plotly(df_eua, data1, data2):
                 yanchor="top",
                 y=0.98,
                 xanchor="center",
-                x=0.5
+                x=0.5,
+                font=dict(color="#f0f2f6")
             ),
             height=get_responsive_height("normal"),
             template="plotly_dark",
-            plot_bgcolor="rgba(0,0,0,0)",
-            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="#0e1117",
+            paper_bgcolor="#0e1117",
             # Configuração explícita dos eixos
             xaxis=dict(
                 title="Maturidade",
-                tickangle=45
+                tickangle=45,
+                gridcolor="#2d3035",
+                zerolinecolor="#4a4f60",
+                color="#f0f2f6"
             ),
             yaxis=dict(
                 title="Taxa de Juros (%)",
-                ticksuffix="%"
+                ticksuffix="%",
+                gridcolor="#2d3035",
+                zerolinecolor="#4a4f60",
+                color="#f0f2f6"
+            ),
+            font=dict(
+                family="Inter, sans-serif",
+                size=12,
+                color="#f0f2f6"
             )
         )
         
@@ -593,7 +821,13 @@ def mostrar_historica_eua(dados):
             fig.update_layout(
                 height=get_responsive_height("normal"),
                 margin=dict(l=20, r=20, t=40, b=40),
-                font=dict(size=12)
+                font=dict(
+                    family="Inter, sans-serif",
+                    size=12,
+                    color="#f0f2f6"
+                ),
+                plot_bgcolor="#0e1117",
+                paper_bgcolor="#0e1117"
             )
             st.plotly_chart(fig, use_container_width=True, config={
                 "displayModeBar": True,
@@ -663,10 +897,12 @@ def mostrar_superficie_eua(dados):
         st.error("Dados dos EUA não disponíveis")
         return
     
-    st.markdown("## Monitor de Juros Brasil e EUA 🇺🇸")
-    st.markdown("<div class=\"chart-title\">Superfície 3D - Evolução das Taxas de Juros dos EUA</div>", unsafe_allow_html=True)
+    st.markdown("## Superfície de Juros - EUA 🇺🇸")
+    st.markdown("Visualize a evolução temporal completa das curvas de juros americanas em três dimensões.")
     
-    fig_us = plot_superficie_3d(dados["eua"], "Monitor de Juros Brasil e EUA", "EUA")
+    st.markdown("<div class=\"chart-title\">Superfície 3D - Evolução das Taxas de Juros</div>", unsafe_allow_html=True)
+    
+    fig_us = plot_superficie_3d(dados["eua"], "Superfície de Juros - EUA", "EUA")
     if fig_us:
         # Ajusta para mobile
         fig_us.update_layout(
@@ -751,7 +987,17 @@ def criar_dashboard_comparativo(dados):
                     fig_br_3d.update_layout(
                         height=get_responsive_height("dashboard"), 
                         margin=dict(l=0, r=0, t=0, b=0),
-                        scene=dict(camera=dict(eye=dict(x=1.2, y=1.2, z=1.0)))
+                        scene=dict(
+                            camera=dict(eye=dict(x=1.2, y=1.2, z=1.0)),
+                            bgcolor="#0e1117"
+                        ),
+                        plot_bgcolor="#0e1117",
+                        paper_bgcolor="#0e1117",
+                        font=dict(
+                            family="Inter, sans-serif",
+                            size=12,
+                            color="#f0f2f6"
+                        )
                     )
                     st.plotly_chart(fig_br_3d, use_container_width=True, key="dash_br_3d")
         
@@ -764,7 +1010,17 @@ def criar_dashboard_comparativo(dados):
                     fig_eua_3d.update_layout(
                         height=get_responsive_height("dashboard"), 
                         margin=dict(l=0, r=0, t=0, b=0),
-                        scene=dict(camera=dict(eye=dict(x=1.2, y=1.2, z=1.0)))
+                        scene=dict(
+                            camera=dict(eye=dict(x=1.2, y=1.2, z=1.0)),
+                            bgcolor="#0e1117"
+                        ),
+                        plot_bgcolor="#0e1117",
+                        paper_bgcolor="#0e1117",
+                        font=dict(
+                            family="Inter, sans-serif",
+                            size=12,
+                            color="#f0f2f6"
+                        )
                     )
                     st.plotly_chart(fig_eua_3d, use_container_width=True, key="dash_eua_3d")
 
