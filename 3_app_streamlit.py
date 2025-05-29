@@ -330,12 +330,11 @@ def plot_superficie_3d(df, titulo, pais):
     if pais == "Brasil":
         # Remove sufixo "_dias" das colunas para melhor visualização
         colunas_display = [col.replace("_dias", "d") for col in df.columns]
-        z_values = df.values * 100  # Converte para percentual (ex: 0.15 -> 15)
-        colorscale = "RdYlGn_r"  # Mudança para mesma cor dos EUA (verde, amarelo, vermelho)
+        z_values = df.values * 100  # Converte para percentual
+        colorscale = "RdYlGn_r"
     else:
-        # Para EUA, mantém a ordem original das colunas (maior para menor maturidade)
         colunas_display = df.columns.tolist()
-        z_values = df.values # Divide por 100 para converter de percentual para decimal (ex: 5.25 -> 0.0525, exibindo como 5.25% no gráfico)
+        z_values = df.values
         colorscale = "RdYlGn_r"
     
     # Cria figura
@@ -346,7 +345,7 @@ def plot_superficie_3d(df, titulo, pais):
         go.Surface(
             x=colunas_display,
             y=df.index.strftime("%Y-%m-%d"),
-            z=z_values,  # Já convertido para percentual acima
+            z=z_values,
             colorscale=colorscale,
             opacity=0.9,
             contours={
@@ -364,7 +363,14 @@ def plot_superficie_3d(df, titulo, pais):
     
     # Layout
     fig.update_layout(
-        title="",  # Título vazio para evitar undefined
+        title=dict(
+            text=f"Superfície de Juros - {pais}",
+            y=0.95,
+            x=0.5,
+            xanchor='center',
+            yanchor='top',
+            font=dict(color="#FFFFFF", size=20)
+        ),
         showlegend=True,
         scene=dict(
             xaxis=dict(
@@ -398,7 +404,7 @@ def plot_superficie_3d(df, titulo, pais):
             bgcolor="#0e1117"
         ),
         height=get_responsive_height("superficie"),
-        margin=dict(l=0, r=0, b=0, t=50),
+        margin=dict(l=0, r=0, b=0, t=80),  # Ajusta margem superior para o título
         font=dict(
             size=12,
             color="#f0f2f6"
@@ -495,7 +501,14 @@ def plot_curva_di1_plotly(di1_curve, refdate_one, refdate_two):
         
         # Layout
         fig.update_layout(
-            title="",  # Título vazio em vez de None
+            title=dict(
+                text="Comparação de Curvas DI1",
+                y=0.95,
+                x=0.5,
+                xanchor='center',
+                yanchor='top',
+                font=dict(color="#FFFFFF", size=20)
+            ),
             hovermode="x unified",
             showlegend=True,
             legend=dict(
@@ -510,12 +523,12 @@ def plot_curva_di1_plotly(di1_curve, refdate_one, refdate_two):
             template="plotly_dark",
             plot_bgcolor="#0e1117",
             paper_bgcolor="#0e1117",
-            # Configuração explícita dos eixos
+            margin=dict(t=80),  # Ajusta margem superior para o título
             xaxis=dict(
                 title="Maturidade",
-                tickformat="%Y",  # Formato de ano
-                dtick="M24",  # Tick a cada 24 meses (2 anos)
-                tickangle=45,  # Rotaciona labels 45 graus
+                tickformat="%Y",
+                dtick="M24",
+                tickangle=45,
                 gridcolor="#2d3035",
                 zerolinecolor="#4a4f60",
                 color="#f0f2f6"
@@ -606,7 +619,14 @@ def plot_curva_eua_plotly(df_eua, data1, data2):
         
         # Layout
         fig.update_layout(
-            title="",  # Título vazio em vez de None
+            title=dict(
+                text="Comparação de Curvas dos EUA",
+                y=0.95,
+                x=0.5,
+                xanchor='center',
+                yanchor='top',
+                font=dict(color="#FFFFFF", size=20)
+            ),
             hovermode="x unified",
             showlegend=True,
             legend=dict(
@@ -706,8 +726,6 @@ def mostrar_historica_brasil(dados):
             key="br_data2_new"
         )
     
-    st.markdown("<div class=\"chart-title\">Comparação de Curvas DI1</div>", unsafe_allow_html=True)
-    
     # Cria o gráfico de comparação
     if data1 and data2:
         # Converte para datetime
@@ -805,8 +823,6 @@ def mostrar_historica_eua(dados):
         )
         data2 = datas_disponiveis[idx_data2]
     
-    st.markdown("<div class=\"chart-title\">Comparação de Curvas dos EUA</div>", unsafe_allow_html=True)
-    
     # Cria o gráfico de comparação
     if data1 and data2:
         # Converte para datetime (os objetos já são datetime do pandas)
@@ -857,8 +873,6 @@ def mostrar_superficie_brasil(dados):
     st.markdown("## Superfície de Juros - Brasil 🇧🇷")
     st.markdown("Visualize a evolução temporal completa das curvas de juros brasileiras em três dimensões.")
     
-    st.markdown("<div class=\"chart-title\">Superfície 3D - Evolução das Taxas de Juros</div>", unsafe_allow_html=True)
-    
     fig_br = plot_superficie_3d(dados["brasil"], "Superfície de Juros - Brasil", "Brasil")
     if fig_br:
         # Ajusta para mobile
@@ -899,8 +913,6 @@ def mostrar_superficie_eua(dados):
     
     st.markdown("## Superfície de Juros - EUA 🇺🇸")
     st.markdown("Visualize a evolução temporal completa das curvas de juros americanas em três dimensões.")
-    
-    st.markdown("<div class=\"chart-title\">Superfície 3D - Evolução das Taxas de Juros</div>", unsafe_allow_html=True)
     
     fig_us = plot_superficie_3d(dados["eua"], "Superfície de Juros - EUA", "EUA")
     if fig_us:
@@ -951,8 +963,6 @@ def criar_dashboard_comparativo(dados):
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("<div class=\"chart-title\">🇧🇷 Curvas Brasil (Últimas 2 Datas)</div>", unsafe_allow_html=True)
-            
             if dados["brasil_bruto"] is not None:
                 di1_curve = processar_dados_brasil_historico(dados["brasil_bruto"])
                 if di1_curve is not None:
@@ -964,8 +974,6 @@ def criar_dashboard_comparativo(dados):
                             st.plotly_chart(fig_br, use_container_width=True, key="dash_br")
         
         with col2:
-            st.markdown("<div class=\"chart-title\">🇺🇸 Curvas EUA (Últimas 2 Datas)</div>", unsafe_allow_html=True)
-            
             if dados["eua"] is not None:
                 datas_eua = sorted(dados["eua"].index)
                 if len(datas_eua) >= 2:
@@ -979,8 +987,6 @@ def criar_dashboard_comparativo(dados):
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("<div class=\"chart-title\">🇧🇷 Superfície Brasil</div>", unsafe_allow_html=True)
-            
             if dados["brasil"] is not None:
                 fig_br_3d = plot_superficie_3d(dados["brasil"], "", "Brasil")
                 if fig_br_3d:
@@ -1002,8 +1008,6 @@ def criar_dashboard_comparativo(dados):
                     st.plotly_chart(fig_br_3d, use_container_width=True, key="dash_br_3d")
         
         with col2:
-            st.markdown("<div class=\"chart-title\">🇺🇸 Superfície EUA</div>", unsafe_allow_html=True)
-            
             if dados["eua"] is not None:
                 fig_eua_3d = plot_superficie_3d(dados["eua"], "", "EUA")
                 if fig_eua_3d:
@@ -1166,4 +1170,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
