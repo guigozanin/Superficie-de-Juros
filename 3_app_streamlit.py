@@ -287,7 +287,45 @@ st.markdown("""
     ::-webkit-scrollbar-thumb:hover {
         background: #5a6072;
     }
-</style>
+    
+    /* Estilo customizado para os botões do Streamlit */
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+        background: linear-gradient(145deg, #1a1c24 0%, #262730 100%) !important;
+        border-radius: 15px !important;
+        padding: 1.5rem 1rem !important;
+        transition: all 0.3s ease !important;
+        border: 1px solid rgba(74, 79, 96, 0.3) !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+        min-height: 120px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        color: #f0f2f6 !important;
+        font-weight: 500 !important;
+        width: 100% !important;
+    }
+
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 8px 15px rgba(88, 255, 233, 0.2) !important;
+        border: 1px solid rgba(88, 255, 233, 0.3) !important;
+    }
+
+    div[data-testid="stHorizontalBlock"] button[kind="secondary"]:active {
+        background: linear-gradient(145deg, #262730 0%, #3a3f4a 100%) !important;
+        border: 1px solid #58FFE9 !important;
+        box-shadow: 0 0 15px rgba(88, 255, 233, 0.3) !important;
+    }
+
+    @media (max-width: 768px) {
+        div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+            min-height: 100px !important;
+            padding: 1rem 0.8rem !important;
+            font-size: 0.9rem !important;
+        }
+    }
+    </style>
 """, unsafe_allow_html=True)
 
 @st.cache_data
@@ -1154,45 +1192,39 @@ def main():
     }
     </style>
     
-    <div class="nav-grid">
-        <div class="nav-card {selected == "📊 Curvas Brasil" and "active" or ""}" onclick="window.streamlitSelectOption('📊 Curvas Brasil')">
-            <div class="nav-icon">📊</div>
-            <div class="nav-title">Curvas Brasil</div>
-        </div>
-        <div class="nav-card {selected == "📈 Curvas EUA" and "active" or ""}" onclick="window.streamlitSelectOption('📈 Curvas EUA')">
-            <div class="nav-icon">📈</div>
-            <div class="nav-title">Curvas EUA</div>
-        </div>
-        <div class="nav-card {selected == "🇧🇷 Superfície Brasil" and "active" or ""}" onclick="window.streamlitSelectOption('🇧🇷 Superfície Brasil')">
-            <div class="nav-icon">🇧🇷</div>
-            <div class="nav-title">Superfície Brasil</div>
-        </div>
-        <div class="nav-card {selected == "🇺🇸 Superfície EUA" and "active" or ""}" onclick="window.streamlitSelectOption('🇺🇸 Superfície EUA')">
-            <div class="nav-icon">🇺🇸</div>
-            <div class="nav-title">Superfície EUA</div>
-        </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Criação de botões em JavaScript
-    st.markdown("""
-    <script>
-    function streamlitSelectOption(option) {
-        // Atualiza o estado e força o recarregamento
-        const mapping = {
-            "📊 Curvas Brasil": "historica_brasil",
-            "📈 Curvas EUA": "historica_eua",
-            "🇧🇷 Superfície Brasil": "superficie_brasil",
-            "🇺🇸 Superfície EUA": "superficie_eua"
-        };
-        
-        window.parent.postMessage({
-            type: "streamlit:setComponentValue",
-            value: mapping[option]
-        }, "*");
-    }
-    </script>
-    """, unsafe_allow_html=True)
+    # Criação dos botões usando colunas do Streamlit
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        if st.button("📊 Curvas Brasil", key="btn_curvas_br", 
+                    help="Visualizar curvas de juros do Brasil",
+                    use_container_width=True):
+            st.session_state.visualizacao_ativa = "historica_brasil"
+            st.rerun()
+    
+    with col2:
+        if st.button("📈 Curvas EUA", key="btn_curvas_eua",
+                    help="Visualizar curvas de juros dos EUA",
+                    use_container_width=True):
+            st.session_state.visualizacao_ativa = "historica_eua"
+            st.rerun()
+    
+    with col3:
+        if st.button("🇧🇷 Superfície Brasil", key="btn_sup_br",
+                    help="Visualizar superfície 3D de juros do Brasil",
+                    use_container_width=True):
+            st.session_state.visualizacao_ativa = "superficie_brasil"
+            st.rerun()
+    
+    with col4:
+        if st.button("🇺🇸 Superfície EUA", key="btn_sup_eua",
+                    help="Visualizar superfície 3D de juros dos EUA",
+                    use_container_width=True):
+            st.session_state.visualizacao_ativa = "superficie_eua"
+            st.rerun()
 
     # Estado para controlar qual visualização está ativa
     if "visualizacao_ativa" not in st.session_state:
