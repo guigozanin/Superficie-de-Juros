@@ -501,50 +501,50 @@ def plot_curva_di1_plotly(di1_curve, refdate_one, refdate_two):
         
         # Layout
         fig.update_layout(
-            title=dict(
-                text="Comparação de Curvas DI1",
-                y=0.95,
-                x=0.5,
-                xanchor='center',
-                yanchor='top',
-                font=dict(color="#FFFFFF", size=20)
-            ),
-            hovermode="x unified",
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="top",
-                y=0.98,
-                xanchor="center",
-                x=0.5,
-                font=dict(color="#f0f2f6")
-            ),
-            height=get_responsive_height("normal"),
-            template="plotly_dark",
-            plot_bgcolor="#0e1117",
-            paper_bgcolor="#0e1117",
-            margin=dict(t=80),  # Ajusta margem superior para o título
-            xaxis=dict(
-                title="Maturidade",
-                tickformat="%Y",
-                dtick="M24",
-                tickangle=45,
-                gridcolor="#2d3035",
-                zerolinecolor="#4a4f60",
-                color="#f0f2f6"
-            ),
-            yaxis=dict(
-                title="Taxa de Juros (%)",
-                tickformat=".1%",
-                gridcolor="#2d3035",
-                zerolinecolor="#4a4f60",
-                color="#f0f2f6"
-            ),
-            font=dict(
-                family="Inter, sans-serif",
-                size=12,
-                color="#f0f2f6"
-            )
+        title=dict(
+            text="Comparação de Curvas DI1",
+            y=0.95,
+            x=0.5,
+            xanchor='center',
+            yanchor='top',
+            font=dict(color="#FFFFFF", size=20)
+        ),
+        hovermode="x unified",
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=0.98,
+            xanchor="center",
+            x=0.5,
+            font=dict(color="#f0f2f6")
+        ),
+        height=get_responsive_height("normal"),
+        template="plotly_dark",
+        plot_bgcolor="#0e1117",
+        paper_bgcolor="#0e1117",
+        margin=dict(t=80),  # Ajusta margem superior para o título
+        xaxis=dict(
+            title="Maturidade",
+            tickformat="%Y",
+            dtick="M24",
+            tickangle=45,
+            gridcolor="#2d3035",
+            zerolinecolor="#4a4f60",
+            color="#f0f2f6"
+        ),
+        yaxis=dict(
+            title="Taxa de Juros (%)",
+            tickformat=".1%",
+            gridcolor="#2d3035",
+            zerolinecolor="#4a4f60",
+            color="#f0f2f6"
+        ),
+        font=dict(
+            family="Inter, sans-serif",
+            size=12,
+            color="#f0f2f6"
+        )
         )
         
         return fig
@@ -1081,67 +1081,122 @@ def main():
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
     
-    # Barra de navegação avançada
-    selected = option_menu(
-        menu_title=None,  # required
-        options=["📊 Curvas Brasil", "📈 Curvas EUA", "🇧🇷 Superfície Brasil", "🇺🇸 Superfície EUA"],  # required
-        icons=["activity", "trending-up", "bar-chart-fill", "graph-up"],  # optional
-        menu_icon="cast",  # optional
-        default_index=0,  # optional
-        orientation="horizontal",
-        styles={
-            "container": {
-                "padding": "0!important", 
-                "background-color": "#0e1117",
-                "border-radius": "10px",
-                "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)"
-            },
-            "icon": {
-                "color": "#58FFE9", 
-                "font-size": "18px"
-            },
-            "nav-link": {
-                "font-size": "16px",
-                "text-align": "center",
-                "margin": "0px",
-                "padding": "12px 24px",
-                "background-color": "#262730",
-                "color": "#fafafa",
-                "border-radius": "8px",
-                "margin": "2px",
-                "transition": "all 0.3s ease",
-                "font-weight": "500"
-            },
-            "nav-link-selected": {
-                "background-color": "#58FFE9",
-                "color": "#0e1117",
-                "font-weight": "600",
-                "transform": "translateY(-2px)",
-                "box-shadow": "0 4px 8px rgba(88, 255, 233, 0.3)"
-            },
-            "nav-link:hover": {
-                "background-color": "#3a3a3a",
-                "transform": "translateY(-1px)"
-            }
-        }
-    )
-    
-    # Mapeia a seleção para os estados internos
-    mapping = {
-        "📊 Curvas Brasil": "historica_brasil",
-        "📈 Curvas EUA": "historica_eua",
-        "🇧🇷 Superfície Brasil": "superficie_brasil",
-        "🇺🇸 Superfície EUA": "superficie_eua"
+    <style>
+    .nav-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+        margin-bottom: 2rem;
     }
     
+    .nav-card {
+        background: linear-gradient(145deg, #1a1c24 0%, #262730 100%);
+        border-radius: 15px;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(74, 79, 96, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .nav-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(88, 255, 233, 0.2);
+        border: 1px solid rgba(88, 255, 233, 0.3);
+    }
+    
+    .nav-card.active {
+        background: linear-gradient(145deg, #262730 0%, #3a3f4a 100%);
+        border: 1px solid #58FFE9;
+        box-shadow: 0 0 15px rgba(88, 255, 233, 0.3);
+    }
+    
+    .nav-icon {
+        font-size: 2rem;
+        color: #58FFE9;
+        margin-bottom: 0.8rem;
+    }
+    
+    .nav-title {
+        color: #f0f2f6;
+        font-size: 1rem;
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    @media (max-width: 768px) {
+        .nav-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .nav-card {
+            min-height: 100px;
+            padding: 1rem 0.8rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-title {
+            font-size: 0.9rem;
+        }
+    }
+    </style>
+    
+    <div class="nav-grid">
+        <div class="nav-card {selected == "📊 Curvas Brasil" and "active" or ""}" onclick="window.streamlitSelectOption('📊 Curvas Brasil')">
+            <div class="nav-icon">📊</div>
+            <div class="nav-title">Curvas Brasil</div>
+        </div>
+        <div class="nav-card {selected == "📈 Curvas EUA" and "active" or ""}" onclick="window.streamlitSelectOption('📈 Curvas EUA')">
+            <div class="nav-icon">📈</div>
+            <div class="nav-title">Curvas EUA</div>
+        </div>
+        <div class="nav-card {selected == "🇧🇷 Superfície Brasil" and "active" or ""}" onclick="window.streamlitSelectOption('🇧🇷 Superfície Brasil')">
+            <div class="nav-icon">🇧🇷</div>
+            <div class="nav-title">Superfície Brasil</div>
+        </div>
+        <div class="nav-card {selected == "🇺🇸 Superfície EUA" and "active" or ""}" onclick="window.streamlitSelectOption('🇺🇸 Superfície EUA')">
+            <div class="nav-icon">🇺🇸</div>
+            <div class="nav-title">Superfície EUA</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Criação de botões em JavaScript
+    st.markdown("""
+    <script>
+    function streamlitSelectOption(option) {
+        // Atualiza o estado e força o recarregamento
+        const mapping = {
+            "📊 Curvas Brasil": "historica_brasil",
+            "📈 Curvas EUA": "historica_eua",
+            "🇧🇷 Superfície Brasil": "superficie_brasil",
+            "🇺🇸 Superfície EUA": "superficie_eua"
+        };
+        
+        window.parent.postMessage({
+            type: "streamlit:setComponentValue",
+            value: mapping[option]
+        }, "*");
+    }
+    </script>
+    """, unsafe_allow_html=True)
+
     # Estado para controlar qual visualização está ativa
     if "visualizacao_ativa" not in st.session_state:
         st.session_state.visualizacao_ativa = "historica_brasil"
-    
-    # Atualiza o estado baseado na seleção
-    st.session_state.visualizacao_ativa = mapping[selected]
     
     # Rodapé simplificado
     col_info1, col_info2, col_info3 = st.columns(3)
