@@ -177,3 +177,4 @@ Desenvolvido por **After Market FL** para análise educacional e profissional do
 ---
 
 **🎯 Dica:** Para melhor experiência, use o navegador em tela cheia e explore as funcionalidades interativas dos gráficos Plotly!
+
